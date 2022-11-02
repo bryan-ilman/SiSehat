@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  
+<head>
+
+  {% block meta %}
+  <title>Lihat Obat</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Tahoma">
+  <link rel="stylesheet" href="{% static 'css/riwayat_penyakit.css' %}">
+  <script src="{% static 'js/lihat_obat' %}"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/js/standalone/selectize.min.js" integrity="sha256-+C0A5Ilqmu4QcSPxrlGpaZxJ04VjsRjKu+G82kl5UJk=" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.bootstrap3.min.css" integrity="sha256-ze/OEYGcFbPRmvCnrSeKbRTtjG4vGLHXgOqsyLFTRjg=" crossorigin="anonymous" />
+  <script>
+    $(document).ready(function () {
+      $('select').selectize({
+          sortField: 'text'
+      });
+    });
+  </script>
+  {% endblock meta %}
+  
+</head>
+
+{% block content %}
+
+<nav class="navbar navbar-expand-lg ">
+  <div class="container">
+    <div class="container-fluid d-flex align-items-center justify-content-between w-full">
+      <a class="navbar-brand" href="{% url 'dokter:home' %}"><img src="{% static 'images/logo.png' %}" alt="img" style="max-width: 90px; max-height: 90px; padding: left -20px; "></img> SiSehat</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+        aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav ms-auto">
+          <!-- <a class="nav-link" id="idNavbar" aria-current="page" href="{% url 'dokter:home'}">Home</a>
+          <a class="nav-link" id="idNavbar" href="{% url 'dokter:home'}">About Us</a>
+          <a class="nav-link" id="idNavbar" href="{% url 'dokter:home'}">Features</a>
+          <a class="nav-link " id="idNavbar" href="{% url 'dokter:home'}">Feedback</a> -->
+
+          {% if user.is_authenticated %}
+            <li style="color: #fff; padding-top: 8px;"><i class="fa fa-sign-out" aria-hidden="true"></i><a class="nav-link" href="{% url 'registrasi:logout' %}">Hi, {{ request.user }}. Logout?</a></li>
+            <li class="scroll-to-section">
+              <!-- <button><a style="color: #EAE0CC;" href="{% url 'registrasi:logout' %}">Logout</a></button> -->
+            </li>
+          {% else %}
+            <a class="nav-link btn " id="btnLogin" href="/registrasi/halaman-masuk/">Login</a>
+            <li class="scroll-to-section"><div class="border-first-button"><a href="#">Login</a></div></li> 
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Modal -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 style="font-weight: bold;"class="modal-title fs-5" id="staticBackdropLabel">Add Obat</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="penyakit-form">
+          <form class="new-penyakit" id="form">
+            {% csrf_token %}
+            <h6>Nama Obat:</h6>
+            <!-- <input id="nama-penyakit" type="text" name="nama-penyakit" placeholder="Nama Penyakit"></input> -->
+            {{ form.nama_obat }}
+            <h6>Deskripsi:</h6>
+            <!-- <textarea id="keluhan" type="text" name="keluhan" placeholder="Keluhan"></textarea> -->
+            {{ form.deskripsi }}
+        </form>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button id="button" type="submit" class="btn btn-success" onclick=addPenyakit()>Add Penyakit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<body>
+
+    <!-- <nav class="navbar">
+      <div class="container-fluid">
+        <a id="title" class="navbar-brand" href="">SiSehat</a>
+        <button id="navbar-buttons" type="button" class="btn btn-danger"><a href="">Logout</a></button>
+      </div>
+    </nav> -->
+
+    <div class="page-title">
+      <br><br>
+      <h1 style="font-family: Tahoma, sans-serif; font-weight: bold;">Lihat Riwayat Penyakit</h1>
+    </div>
+
+    {% if dokter %}
+      <div id="penyakit" class="content">
+          
+          <br>
+
+          <label for="daftar-pasien" style="font-weight: bold;">Pilih pasien (NIK):</label>
+          <select name="pasien" id="daftar-pasien" placeholder="Pilih pasien (NIK)...">
+              {% for pasien in list_pasien %}
+                  <option>{{ pasien.nomor_induk_kependudukan }}</option>
+              {% endfor %}
+          </select>
+
+      </div>
+    {% endif %}
+
+    <div class="page-title">
+      <br><br>
+      <h1 style="font-family: Tahoma, sans-serif; font-weight: bold;">Obat</h1>
+    </div>
+
+    <div id="keluhan" class="content">
+        
+      <br>
+      
+      <table class="display-keluhan">
+        <tr class="table-header">
+          <th>Tanggal</th>
+          <th>Nama Obat</th>
+          <th>Deskripsi</th>
+        </tr>
+      </table>
+      <br><br>
+
+      <button id="select-pasien" type="submit" class="btn btn-success" onclick=show()>Lihat Obat</button>
+
+      {% if dokter %}
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+          Add Obat
+      </button>
+      {% endif %}
+
+      <br><br><br><br>
+
+  </div>
+
+</body>
+
+
+{% endblock content %}
+

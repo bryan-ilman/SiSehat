@@ -71,7 +71,7 @@ function togglePenyakit(id) {
   })
 }
 
-function getKeluhan() {
+function getKeluhanDokter() {
   var listPasien = document.getElementById("daftar-pasien");
   var pasien = listPasien.options[listPasien.selectedIndex].text;
   console.log("in getKeluhan");
