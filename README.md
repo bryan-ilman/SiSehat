@@ -1,6 +1,7 @@
 # SiSehat
 
 ## [Link Aplikasi](https://sisehat-group.herokuapp.com/)
+## [Link Repository Deployment](https://github.com/rayhanrandi/testdeploy-sisehat)
 
 #### Anggota Kelompok:
 1. Abby Marvel Immanuel Parasian Pribadi
