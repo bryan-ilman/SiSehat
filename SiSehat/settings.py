@@ -1,4 +1,6 @@
 import os
+# Update database configuration from $DATABASE_URL.
+import dj_database_url
 
 """
 Django settings for SiSehat project.
@@ -22,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-h0t7@efcv#yflgi90%l#e4eye+%qilp+(@9=me8d1y%5y$(k&1'
-
+PRODUCTION = os.getenv('DATABASE_URL') is not None
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -88,6 +90,10 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+if PRODUCTION:
+    DATABASES['default'] = dj_database_url.config(
+        conn_max_age=600, ssl_require=True
+    )
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -134,7 +140,5 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 STATIC_ROOT = os.path.join(PROJECT_ROOT, 'static/')
 
 
-# Update database configuration from $DATABASE_URL.
-import dj_database_url
-db_from_env = dj_database_url.config(conn_max_age=500)
-DATABASES['default'].update(db_from_env)
+# db_from_env = dj_database_url.config(conn_max_age=500)
+# DATABASES['default'].update(db_from_env)
